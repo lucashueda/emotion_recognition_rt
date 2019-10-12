@@ -1,2 +1,4 @@
-# emotion_recognition_rt
-Real time emotion recognition algorithm.
+# Real time emotion recognition
+
+* Authors:
+
