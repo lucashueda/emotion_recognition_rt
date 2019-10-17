@@ -1,0 +1,59 @@
+import cv2
+import dlib
+import cv2
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+dlib.DLIB_USE_CUDA = True
+
+
+def rect_to_bb(rect):
+    # take a bounding predicted by dlib and convert it
+    # to the format (x, y, w, h) as we would normally do
+    # with OpenCV
+    x = rect.left()
+    y = rect.top()
+    w = rect.right() - x
+    h = rect.bottom() - y
+ 
+    # return a tuple of (x, y, w, h)
+    return (x, y, w, h)
+
+captura = cv2.VideoCapture(0)
+ 
+count = 0
+
+p = "shape_predictor_68_face_landmarks.dat"
+detector = dlib.get_frontal_face_detector()
+predictor = dlib.shape_predictor(p)
+
+while(1):
+    ret, frame = captura.read()
+
+
+    if(count%2==0):
+        rects = detector(frame, 0)
+
+        #For each detected face  
+        for k,d in enumerate(rects):
+
+            (x, y, w, h) = rect_to_bb(d)
+            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+
+            #Get coordinates
+            shape = predictor(frame, d)
+            #There are 68 landmark points on each face
+            for i in range(1,68):
+
+                cv2.circle(frame, (shape.part(i).x, shape.part(i).y), 1, (0,255,0), thickness=-1) #For each point, draw a red circle with thickness2 on the original frame
+
+
+    
+        cv2.imshow("Video", frame)
+       
+    k = cv2.waitKey(30) & 0xff
+    if k == 27:
+        break
+    count = count+1
+
+captura.release()
+cv2.destroyAllWindows()
